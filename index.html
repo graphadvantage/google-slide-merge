@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <style>
+      .list-container {
+        display: flex;
+        justify-content: space-around;
+      }
+      .list {
+        border: 1px solid #ccc;
+        width: 45%;
+        min-height: 200px;
+        padding: 10px;
+        list-style: none;
+      }
+      .list li {
+        margin: 5px 0;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        cursor: move;
+      }
+      td {
+        color:#9e9e9e;
+        text-align: center;
+        padding-top: 0px;
+      }
+    </style>
+    <script>
+      function loadFolderContents(folderUrlId, listId) {
+        google.script.run.withSuccessHandler(function(contents) {
+          const list = document.getElementById(listId);
+          list.innerHTML = '';
+          contents.forEach(function(item) {
+            const li = document.createElement('li');
+            li.textContent = item.name;
+            li.setAttribute('item-url', item.url);
+            list.appendChild(li);
+          });
+          makeSortable();
+        }).getFolderContents(document.getElementById(folderUrlId).value);
+      }
+
+      function makeSortable() {
+        const list1 = document.getElementById('list1');
+        const list2 = document.getElementById('list2');
+        Sortable.create(list1, { group: 'shared', animation: 150 });
+        Sortable.create(list2, { group: 'shared', animation: 150 });
+      }
+
+      function getMergeList() {
+        const list1 = document.getElementById('list1');
+        const items = list1.getElementsByTagName('li');
+        const mergeList = [];
+        for (let i = 0; i < items.length; i++) {
+          mergeList.push({
+            name: items[i].textContent,
+            url:items[i].getAttribute('item-url')
+          });
+        }
+        return mergeList;
+      }
+
+      function onFormSubmit() {
+        const fileDetails = getMergeList()
+        const destinationFolderUrl = document.getElementById('destination-folder-url').value;
+        const fileName = document.getElementById('file-name').value;
+
+        google.script.run.withSuccessHandler(onSuccess).mergeSlidesFromUI(fileDetails, fileName, destinationFolderUrl);
+      }
+
+      function onSuccess(result) {
+        //const mergedSlidesList = document.getElementById('merged-slides-list');
+        //mergedSlidesList.innerHTML = '';
+
+        //result.mergedSlides.forEach((slide, index) => {
+        //  const listItem = document.createElement('li');
+        //  listItem.innerHTML = `${index + 1}. <a href="${slide.url}" target="_blank">${slide.name}</a>`;
+        //  mergedSlidesList.appendChild(listItem);
+        //});
+
+        const mergedDeckLink = document.getElementById('merged-deck-link');
+        mergedDeckLink.href = result.mergedDeckUrl;
+        //mergedDeckLink.textContent = 'Click here to view the merged deck';
+        mergedDeckLink.textContent = result.mergedDeckName;
+        mergedDeckLink.style.display = 'block';
+
+        M.toast({html: 'Slides merged successfully!'});
+      }
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <h3>Merge Google Slides</h3>
+      <h5>Sources & Destination:</h5>
+      <div class="input-field">
+        <label for="folderUrl1">Source Folder #1 URL</label>
+        <input type="text" id="folderUrl1" type="text" class="validate" required>
+        <button class="btn waves-effect waves-light" type="submit" name="action" onclick="loadFolderContents('folderUrl1', 'list1')">Load Folder #1
+          <i class="material-icons right">folder</i>
+        </button>
+      </div>
+      <div class="input-field">
+        <label for="folderUrl2">Source Folder #2 URL</label>
+        <input type="text" id="folderUrl2" type="text" class="validate"required>
+        <button class="btn waves-effect waves-light" type="submit" name="action" onclick="loadFolderContents('folderUrl2', 'list2')">Load Folder #2
+          <i class="material-icons right">folder</i></button>
+      </div>
+      <div class="input-field">
+        <input id="destination-folder-url" type="text" class="validate"required>
+        <label for="destination-folder-url">Destination Folder URL</label>
+      </div>
+      <div class="input-field">
+        <input id="file-name" type="text" class="validate" required>
+        <label for="file-name">Merged File Name</label>
+      </div>
+      <h5>Drag & Sort:</h5>
+      <table>
+        <tr>
+          <td>Merge List</th>
+          <td>Ignore List</th>
+        </tr>
+      </table>
+      <div class="list-container">
+        <ul id="list1" class="list"></ul>
+        <ul id="list2" class="list"></ul>
+      </div>
+      <button class="btn waves-effect waves-light" type="submit" name="action" onclick="onFormSubmit()">Merge Slides
+        <i class="material-icons right">send</i>
+      </button>
+      <h5>Merged Slides:</h5>
+      <!--ul style="list-style: none;" id="merged-slides-list"></ul-->
+      <a id="merged-deck-link" href="#" target="_blank" style="display:none;"></a>&nbsp;
+    </div>
+  </body>
+</html>
