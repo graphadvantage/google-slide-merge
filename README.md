@@ -1,9 +1,9 @@
 # google-slide-merge
 
 ### Overview:
-Google App Script web app utility for merging Google slide decks into a new deck on Google Drive. Useful for building presentations from modularized content. Uses Google APIs for [Drive](https://developers.google.com/apps-script/advanced/drive) & [Slides](https://developers.google.com/apps-script/advanced/slides) as well as [sortable.js](https://github.com/SortableJS/Sortable?tab=readme-ov-file).
+Google Apps Script web app utility for merging Google slide decks into a new deck on Google Drive. Useful for building presentations from modularized content. Uses Google APIs for [Drive](https://developers.google.com/apps-script/advanced/drive) & [Slides](https://developers.google.com/apps-script/advanced/slides) as well as [sortable.js](https://github.com/SortableJS/Sortable?tab=readme-ov-file)
 
-![screenshot of deployed app](images/google-slide-merge.png)
+![screenshot of deployed web app](images/google-slide-merge.png)
 
 ### Deploy:
 
