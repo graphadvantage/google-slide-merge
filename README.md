@@ -7,7 +7,7 @@ Google Apps Script web app utility for merging Google Slides decks into a new de
 
 ### Deploy:
 
-* Create a new Google App Script
+* Create a new Google Apps Script
 
 * In the code editor, open the Services menu and add the **Drive** and **Slides** services
 
